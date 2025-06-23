@@ -1,17 +1,33 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	handler "github.com/dangLuan01/api_gin/internal/api/v1/handler"
 )
 
 func main()  {
 	r := gin.Default()
-	r.GET("ok", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": "ok",
-		})
-	})
+	v1 := r.Group("api/v1")
+	{
+		userHandler := handler.NewUserHandler()
+		user := v1.Group("/users")
+		{
+			user.GET("", userHandler.GetUsersV1)
+			user.GET("/:id", userHandler.GetUserByIdV1)
+			user.POST("", userHandler.PostUserV1)
+			user.PUT("/:id", userHandler.PutUserV1)
+			user.DELETE("/:id", userHandler.DeleteUserV1)
+
+		}
+		productHandler := handler.NewProductHandler()
+		product := v1.Group("/products")
+		{
+			product.GET("", productHandler.GetProductsV1)
+			product.GET("/:id", productHandler.GetProductsByIdV1)
+			product.POST("", productHandler.PostProductsV1)
+			product.PUT("/:id", productHandler.PutProductsV1)
+			product.DELETE("/:id", productHandler.DeleteProductsV1)
+		}
+	}
 	r.Run(":8080")
 }

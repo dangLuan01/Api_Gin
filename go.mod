@@ -1,4 +1,4 @@
-module github.com/dangLuan01/Api_Gin
+module github.com/dangLuan01/api_gin
 
 go 1.24.4
 
