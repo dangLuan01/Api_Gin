@@ -23,7 +23,7 @@ func main()  {
 		product := v1.Group("/products")
 		{
 			product.GET("", productHandler.GetProductsV1)
-			product.GET("/:id", productHandler.GetProductsByIdV1)
+			product.GET("/:slug", productHandler.GetProductsBySlugV1)
 			product.POST("", productHandler.PostProductsV1)
 			product.PUT("/:id", productHandler.PutProductsV1)
 			product.DELETE("/:id", productHandler.DeleteProductsV1)

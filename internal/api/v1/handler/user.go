@@ -2,11 +2,15 @@ package handler
 
 import (
 	"net/http"
+
+	"github.com/dangLuan01/api_gin/utils"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct{}
-
+type GetUserByIdV1Params struct {
+	Id int `uri:"id" binding:"gt=0"`
+}
 func NewUserHandler() *UserHandler {
 	return &UserHandler{}
 }
@@ -16,8 +20,14 @@ func (u *UserHandler) GetUsersV1(ctx *gin.Context) {
 	})
 }
 func (u *UserHandler) GetUserByIdV1(ctx *gin.Context) {
+	var params GetUserByIdV1Params
+	if err := ctx.ShouldBindUri(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandlerValidationErrors(err))
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get User By Id",
+		"id":      params.Id,
 	})
 }
 func (u *UserHandler) PostUserV1(ctx *gin.Context) {
@@ -26,8 +36,14 @@ func (u *UserHandler) PostUserV1(ctx *gin.Context) {
 	})
 }
 func (u *UserHandler) PutUserV1(ctx *gin.Context) {
+	var params GetUserByIdV1Params
+	if err := ctx.ShouldBindUri(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, utils.HandlerValidationErrors(err))
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Update User",
+		"id":      params.Id,
 	})
 }
 func (u *UserHandler) DeleteUserV1(ctx *gin.Context) {
