@@ -9,21 +9,28 @@ import (
 type ProductHandler struct{}
 
 type GetProductBySlugV1Params struct {
-	Slug string `uri:"slug" binding:"slug,min=1"`
+	Slug 			string `uri:"slug" binding:"slug,min=1"`
 }
 type GetProductsV1Params struct {
-	Search string `form:"search" binding:"required,min=3,max=100"`
-	Limit int    `form:"limit" binding:"omitempty,min=1,max=100"`
+	Search 			string `form:"search" binding:"required,min=3,max=100"`
+	Limit 			int    `form:"limit" binding:"omitempty,min=1,max=100"`
 }
 type ProductImage struct {
-	Img_Name string `json:"img_name" binding:"required,min=3,max=100"`
-	Image string `json:"image" binding:"required,file_ext=jpg jpeg png gif"`
+	Img_Name 		string `json:"img_name" binding:"required,min=3,max=100"`
+	Image 			string `json:"image" binding:"required,file_ext=jpg jpeg png gif"`
+}
+type ProductAttributes struct {
+	Size 			string `json:"size" binding:"required"`
+	Color 			string `json:"color" binding:"required"`
 }
 type PostProductsV1Params struct {
-	Name string `json:"name" binding:"required,min=3,max=100"`
-	Price int `json:"price" binding:"required,minInt=0,maxInt=2000"`
-	Status *bool `json:"status" binding:"omitempty"`
-	ProductImage ProductImage `json:"product_image" binding:"required"`
+	Name 				string 							`json:"name" binding:"required,min=3,max=100"`
+	Price 				int 							`json:"price" binding:"required,minInt=0,maxInt=2000"`
+	Status 				*bool 							`json:"status" binding:"omitempty"`
+	ProductImage 		ProductImage 					`json:"product_image" binding:"required"`
+	Tags 				[]string 						`json:"tags" binding:"required,gt=0"`
+	ProductAttributes 	map[string]ProductAttributes 	`json:"product_attributes" binding:"required,gt=0,dive"`
+	ProductMetadata 	map[string]interface{} 			`json:"product_metadata" binding:"required,gt=0,dive"`
 }
 func NewProductHandler() *ProductHandler {
 	return &ProductHandler{}
@@ -66,11 +73,14 @@ func (p *ProductHandler) PostProductsV1(ctx *gin.Context) {
 		params.Status = &defaultStatus
 	}
 	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "Post Product",
-		"name":    params.Name,
-		"price":   params.Price,
-		"product_image":   params.ProductImage,
-		"status":  params.Status,
+		"message": 				"Post Product",
+		"name":    				params.Name,
+		"price":   				params.Price,
+		"product_image":   		params.ProductImage,
+		"status":  				params.Status,
+		"tags": 				params.Tags,
+		"product_attributes": 	params.ProductAttributes,
+		"product_metadata": 	params.ProductMetadata,
 	})
 	
 }

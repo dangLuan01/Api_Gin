@@ -15,26 +15,44 @@ func HandlerValidationErrors(err error) gin.H {
 	if validationError, ok := err.(validator.ValidationErrors); ok {
 		errors := make(map[string]string)
 		for _, e := range validationError {
+			root 	:= strings.Split(e.Namespace(), ".")[0]
+			rawPath := strings.TrimPrefix(e.Namespace(), root + ".")
+			parts 	:= strings.Split(rawPath, ".")
+			for i, part := range parts {
+				if strings.Contains("part", "[") {
+					idx 	:= strings.Index(part, "[")
+					base 	:= camelToSnakeCase(part[:idx])
+					index 	:= part[idx:]
+					parts[i] = fmt.Sprintf("%s%s", base, index)
+				} else {
+					parts[i] = camelToSnakeCase(part)
+				}
+			}
+			fieldPath := strings.Join(parts, ".")
+
 			switch e.Tag() {
 			case "gt":
-				errors[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s", e.Field(), e.Param())
+				errors[fieldPath] = fmt.Sprintf("%s phải lớn hơn %s", fieldPath, e.Param())
 			case "slug":
-				errors[e.Field()] = fmt.Sprintf("%s phải là một slug hợp lệ", e.Field())
+				errors[fieldPath] = fmt.Sprintf("%s phải là một slug hợp lệ", fieldPath)
 			case "required":
-				errors[e.Field()] = fmt.Sprintf("%s là trường bắt buộc", e.Field())
+				errors[fieldPath] = fmt.Sprintf("%s là trường bắt buộc", fieldPath)
 			case "min":
-				errors[e.Field()] = fmt.Sprintf("%s phải có ít nhất %s ký tự", e.Field(), e.Param())
+				errors[fieldPath] = fmt.Sprintf("%s phải có ít nhất %s ký tự", fieldPath, e.Param())
 			case "max":
-				errors[e.Field()] = fmt.Sprintf("%s không được vượt quá %s ký tự", e.Field(), e.Param())
+				errors[fieldPath] = fmt.Sprintf("%s không được vượt quá %s ký tự", fieldPath, e.Param())
 			case "url":
-				errors[e.Field()] = fmt.Sprintf("%s phải là một URL hợp lệ", e.Field())
+				errors[fieldPath] = fmt.Sprintf("%s phải là một URL hợp lệ", fieldPath)
 			case "minInt":
-				errors[e.Field()] = fmt.Sprintf("%s phải lớn hơn %s", e.Field(), e.Param())
+				errors[fieldPath] = fmt.Sprintf("%s phải lớn hơn %s", fieldPath, e.Param())
 			case "maxInt":
-				errors[e.Field()] = fmt.Sprintf("%s không được lớn hơn %s", e.Field(), e.Param())
+				errors[fieldPath] = fmt.Sprintf("%s không được lớn hơn %s", fieldPath, e.Param())
 			case "file_ext":
 				exts := strings.Split(e.Param(), " ")
-				errors[e.Field()] = fmt.Sprintf("%s phải có phần mở rộng là %s", e.Field(), strings.Join(exts, ", "))
+				errors[fieldPath] = fmt.Sprintf("%s phải có phần mở rộng là %s", fieldPath, strings.Join(exts, ", "))
+			case "oneof":
+				options := strings.Split(e.Param(), " ")
+				errors[fieldPath] = fmt.Sprintf("%s phải là một trong các giá trị: %s", fieldPath, strings.Join(options, ", "))
 			}
 		}
 		return gin.H{"errors": errors}
