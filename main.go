@@ -1,12 +1,17 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	handler "github.com/dangLuan01/api_gin/internal/api/v1/handler"
+	"github.com/dangLuan01/api_gin/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func main()  {
 	r := gin.Default()
+	// Register custom validation
+	if err := utils.RegisterValidators(); err != nil {
+		panic(err)
+	}
 	v1 := r.Group("api/v1")
 	{
 		userHandler := handler.NewUserHandler()
