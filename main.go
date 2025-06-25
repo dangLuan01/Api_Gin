@@ -1,17 +1,28 @@
 package main
 
 import (
+	"log"
+
 	handler "github.com/dangLuan01/api_gin/internal/api/v1/handler"
+	"github.com/dangLuan01/api_gin/middleware"
 	"github.com/dangLuan01/api_gin/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main()  {
-	r := gin.Default()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 	// Register custom validation
 	if err := utils.RegisterValidators(); err != nil {
 		panic(err)
 	}
+
+	r := gin.Default()
+	go middleware.CleanupClients()
+	r.Use(middleware.ApiKeyMiddleware(), middleware.RateLimiterMiddleware())
 	v1 := r.Group("api/v1")
 	{
 		userHandler := handler.NewUserHandler()
