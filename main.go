@@ -29,10 +29,10 @@ func main()  {
 		user := v1.Group("/users")
 		{
 			user.GET("", userHandler.GetUsersV1)
-			user.GET("/:id", userHandler.GetUserByIdV1)
+			user.GET("/:uuid", userHandler.GetUserByUUIdV1)
 			user.POST("", userHandler.PostUserV1)
-			user.PUT("/:id", userHandler.PutUserV1)
-			user.DELETE("/:id", userHandler.DeleteUserV1)
+			user.PUT("/:uuid", userHandler.PutUserV1)
+			user.DELETE("/:uuid", userHandler.DeleteUserV1)
 
 		}
 		productHandler := handler.NewProductHandler()

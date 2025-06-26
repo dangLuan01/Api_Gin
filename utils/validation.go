@@ -18,7 +18,7 @@ func HandlerValidationErrors(err error) gin.H {
 			root 	:= strings.Split(e.Namespace(), ".")[0]
 			rawPath := strings.TrimPrefix(e.Namespace(), root + ".")
 			parts 	:= strings.Split(rawPath, ".")
-			for i, part := range parts {
+			for i, part := range parts {	
 				if strings.Contains("part", "[") {
 					idx 	:= strings.Index(part, "[")
 					base 	:= camelToSnakeCase(part[:idx])
@@ -31,6 +31,8 @@ func HandlerValidationErrors(err error) gin.H {
 			fieldPath := strings.Join(parts, ".")
 
 			switch e.Tag() {
+			case "uuid":
+				errors[fieldPath] = fmt.Sprintf("%s phải và uuid %s", fieldPath, e.Param())
 			case "gt":
 				errors[fieldPath] = fmt.Sprintf("%s phải lớn hơn %s", fieldPath, e.Param())
 			case "slug":
