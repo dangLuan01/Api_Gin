@@ -42,12 +42,12 @@ func (u *UserHandler) PutUserV1(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Update User",
+		"message": "Updated User",
 		"id":      params.Id,
 	})
 }
 func (u *UserHandler) DeleteUserV1(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, gin.H{
-		"message": "Delete User",
+		"message": "Deleted User",
 	})
 }

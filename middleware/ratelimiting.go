@@ -30,7 +30,7 @@ func getRateLimiter(ip string) *rate.Limiter {
 
 	client, exists := clients[ip]
 	if !exists {
-		limiter := rate.NewLimiter(1, 3) // 1 request per second, burst size of 3
+		limiter := rate.NewLimiter(5, 10)
 		client = &Client{
 			limiter:  limiter,
 			lastSeen: time.Now(),
@@ -64,5 +64,7 @@ func RateLimiterMiddleware() gin.HandlerFunc {
 			})
 			return
 		}
+		ctx.Next()
 	}
+	
 }
